@@ -7,4 +7,4 @@ Depends on two other Drupal modules:
 - [Swift Mailer](https://www.drupal.org/project/swiftmailer)
 
 ## Installation
-Install javascript dependencies with Bower.
+Install javascript dependencies with Bower. (Install Bower with NPM i.e. Node.js package manager...)
