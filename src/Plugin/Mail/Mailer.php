@@ -7,7 +7,6 @@ use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Utility\Token;
-use Drupal\kifimail\EmailComposerInterface;
 use Drupal\swiftmailer\Plugin\Mail\SwiftMailer;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,7 +24,6 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
   protected $userStorage;
   protected $mailTemplateStorage;
   protected $token;
-  protected $composer;
   protected $mailer;
 
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -33,16 +31,14 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
       $container->get('entity_type.manager')->getStorage('user'),
       $container->get('entity_type.manager')->getStorage('kifimail'),
       $container->get('token'),
-      $container->get('kifimail.email_composer'),
       $container->get('plugin.manager.mail')->createInstance('swiftmailer')
     );
   }
 
-  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, EmailComposerInterface $composer, SwiftMailer $mailer) {
+  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, SwiftMailer $mailer) {
     $this->userStorage = $user_storage;
     $this->mailTemplateStorage = $template_storage;
     $this->token = $token;
-    $this->composer = $composer;
     $this->mailer = $mailer;
   }
 

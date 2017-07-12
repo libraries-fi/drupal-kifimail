@@ -8,9 +8,6 @@ function kifimail_theme() {
       'template' => 'email',
       'mail theme' => true,
       'variables' => [
-        'style' => '',
-        'header' => '',
-        'footer' => '',
         'body' => '',
         'message' => '',
         'logo' => NULL,
