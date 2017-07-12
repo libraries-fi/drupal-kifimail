@@ -42,6 +42,13 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
     $this->mailer = $mailer;
   }
 
+  /**
+   * Format the message.
+   *
+   * For convenience, this mailer allows one to pass recipient, sender etc. mail addresses as
+   * user entities or account proxies. Mailer will then extract the email address from these objects
+   * and also use the person's name.
+   */
   public function format(array $message) {
     $message['to'] = $this->extractMailName($message['to']);
     $reply_to = $message['reply-to'];
