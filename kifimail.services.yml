@@ -1,0 +1,6 @@
+services:
+  kifimail.email_composer:
+    class: Drupal\kifimail\EmailComposer
+    arguments: ['@entity.manager', '@twig']
+    tags:
+      - { name: service_collector, tag: kifimail_variables, call: addProcessor }

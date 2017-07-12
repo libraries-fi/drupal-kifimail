@@ -1,0 +1,42 @@
+kifimail.ajax.template:
+  path: '/admin/kifimail/preview/{theme}'
+  defaults:
+    theme: null
+    _controller: '\Drupal\kifimail\Controller\TemplateViewController::ajaxPreview'
+  requirements:
+    _permission: 'administer kifimail'
+entity.kifimail.collection:
+  path: '/admin/kifimail'
+  defaults:
+    _entity_list: 'kifimail'
+    _title: 'Email templates'
+  requirements:
+    _permission: 'administer kifimail'
+entity.kifimail.canonical:
+  path: '/admin/kifimail/{kifimail}/preview'
+  defaults:
+    _controller: '\Drupal\kifimail\Controller\TemplateViewController::view'
+    _title_callback: '\Drupal\kifimail\Controller\TemplateViewController::title'
+  requirements:
+    _permission: 'administer kifimail'
+entity.kifimail.add_form:
+  path: '/admin/kifimail/new'
+  defaults:
+    _entity_form: 'kifimail.add'
+    _title: 'Create template'
+  requirements:
+    _permission: 'administer kifimail'
+entity.kifimail.edit_form:
+  path: '/admin/kifimail/{kifimail}'
+  defaults:
+    _entity_form: 'kifimail.edit'
+    _title: 'Edit template'
+  requirements:
+    _permission: 'administer kifimail'
+entity.kifimail.delete_form:
+  path: '/admin/kifimail/{kifimail}/delete'
+  defaults:
+    _entity_form: 'kifimail.delete'
+    _title: 'Delete'
+  requirements:
+    _entity_access: 'kifimail.delete'

@@ -1,0 +1,9 @@
+name: Kifimail
+type: module
+core: 8.x
+package: Kirjastot.fi
+description: 'Template-based HTML emails'
+configure: entity.kifimail.collection
+dependencies:
+  - mailsystem
+  - swiftmailer

@@ -1,0 +1,15 @@
+{
+  "name": "kifimail",
+  "authors": [
+    "Samu Juvonen <samu.juvonen@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "http://www.kirjastot.fi",
+  "private": true,
+  "dependencies": {
+    "codemirror": "^5.27.4"
+  }
+}

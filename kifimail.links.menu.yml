@@ -1,0 +1,5 @@
+kifimail.configure:
+  title: 'Mail Templates'
+  route_name: entity.kifimail.collection
+  description: 'Manage email templates and message content'
+  parent: system.admin_config_content

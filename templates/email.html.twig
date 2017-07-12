@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <style type="text/css">
+    html, body {
+      padding: 0;
+      margin: 0;
+    }
+    blockquote {
+      border-left: 5px solid #ff6500;
+      margin: 0;
+      padding: 0 5px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body style="background: #9CA3A1">
+  <div style="background: #4C4C4C; padding-top: 2px">
+    <img src="image:{{ logo }}" alt=""/>
+  </div>
+  <div style="background: white; color: black; overflow-y: hidden; padding: 5px">
+    {% autoescape false %}{{ body }}{% endautoescape %}
+  </div>
+  <div style="background: #9CA3A1; padding: 5px; color: white">
+    <a href="{{ url('<front>') }}" style="color: white; text-decoration: none; float: right">{{ site_name }}</a>
+    {% if with_signature %}
+      <span style="font-size: 0.9em; white-space: pre-line">{{ signature }}</span>
+    {% endif %}
+  </div>
+</body>
+</html>

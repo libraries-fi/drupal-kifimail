@@ -1,0 +1,26 @@
+kifimail.template.*:
+  type: config_entity
+  label: 'Email template'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: string
+      label: 'Entity type'
+    subject:
+      type: string
+      label: 'Subject'
+      translatable: TRUE
+      form_element_class: '\Drupal\config_translation\FormElement\Textfield'
+    body:
+      type: string
+      label: 'Body'
+      translatable: TRUE
+      form_element_class: '\Drupal\config_translation\FormElement\Textarea'
+    style:
+      type: string
+      label: 'Style'
+    variables:
+      type: string
+      label: 'Variables'

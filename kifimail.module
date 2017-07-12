@@ -1,0 +1,70 @@
+<?php
+
+function kifimail_theme() {
+  return [
+    'kifimail' => [
+      'type' => 'base_theme',
+      'hidden' => true,
+      'template' => 'email',
+      'mail theme' => true,
+      'variables' => [
+        'style' => '',
+        'header' => '',
+        'footer' => '',
+        'body' => '',
+        'message' => '',
+        'logo' => NULL,
+        'with_signature' => FALSE,
+      ]
+    ]
+  ];
+}
+
+function kifimail_theme_registry_alter(&$themes) {
+  $mail_themes = array_filter($themes, function($theme) {
+    return !empty($theme['mail theme']);
+  });
+  $mail_themes = array_keys($mail_themes);
+  sort($mail_themes);
+  $config = Drupal::configFactory()->getEditable('kifimail.settings');
+  $config->set('themes', $mail_themes);
+  $config->save();
+}
+
+function template_preprocess_kifimail(&$variables) {
+  $langcode = $variables['message']['langcode'];
+  $basedir = drupal_get_path('module', 'kifimail');
+  $variables['logo'] = "{$basedir}/public/kifi-email-logo-{$langcode}.png";
+
+  $variables['site_name'] = \Drupal::config('system.site')->get('name');
+  $variables['body'] = $variables['message']['body'];
+  $variables['subject'] = $variables['message']['subject'];
+  $variables['with_signature'] = !empty($variables['message']['params']['with_signature']);
+
+  if ($variables['with_signature']) {
+    if (empty($variables['message']['signature'])) {
+      $user = \Drupal::entityTypeManager()->getStorage('user')->load(\Drupal::currentUser()->id());
+      $variables['signature'] = $user->get('field_email_signature')->value;
+    } else {
+      $variables['signature'] = $variables['message']['signature'];
+    }
+  }
+}
+
+function kifimail_tokens($type, array $tokens, array $data, array $options) {
+  $replacements = [];
+
+  if ($type == 'user' && isset($data['user'])) {
+    $user = $data['user'];
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'signature':
+          $replacements[$original] = $user->get('email_signature')->value;
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}

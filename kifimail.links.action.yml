@@ -1,0 +1,5 @@
+kifimail.add_template:
+  route_name: entity.kifimail.add_form
+  title: 'New template'
+  appears_on:
+    - entity.kifimail.collection

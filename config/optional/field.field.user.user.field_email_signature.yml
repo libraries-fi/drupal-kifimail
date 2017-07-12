@@ -1,0 +1,20 @@
+uuid: fd69e512-82c3-4af6-9d5b-bfb120e7a976
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_email_signature
+  module:
+    - user
+id: user.user.field_email_signature
+field_name: field_email_signature
+entity_type: user
+bundle: user
+label: 'Email signature'
+description: 'Signature is used when sending personal email messages.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

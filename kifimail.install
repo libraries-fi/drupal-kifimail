@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Install entity type 'kifimail_email_log'.
+ */
+function kifimail_update_8202(&$sandbox) {
+  $type = Drupal::entityTypeManager()->getDefinition('kifimail_log');
+  Drupal::entityDefinitionUpdateManager()->installEntityType($type);
+}
