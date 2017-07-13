@@ -55,8 +55,8 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
 
     if (isset($message['params']['from'])) {
       $from = $this->extractMailName($message['params']['from']);
-      $message['headers']['From'] = $from;
       $message['headers']['Sender'] = $from;
+      $message['from'] = $from;
     }
 
     if ($reply_to instanceof UserInterface || $reply_to instanceof AccountInterface) {
