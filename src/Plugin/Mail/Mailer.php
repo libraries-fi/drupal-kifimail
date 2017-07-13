@@ -2,16 +2,16 @@
 
 namespace Drupal\kifimail\Plugin\Mail;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\swiftmailer\Plugin\Mail\SwiftMailer;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
-use Drupal\Core\Render\Markup;
 
 /**
  * @Mail(
@@ -31,15 +31,17 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
       $container->get('entity_type.manager')->getStorage('user'),
       $container->get('entity_type.manager')->getStorage('kifimail'),
       $container->get('token'),
-      $container->get('plugin.manager.mail')->createInstance('swiftmailer')
+      $container->get('plugin.manager.mail')->createInstance('swiftmailer'),
+      $container->get('config.factory')
     );
   }
 
-  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, SwiftMailer $mailer) {
+  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, SwiftMailer $mailer, ConfigFactoryInterface $config_factory) {
     $this->userStorage = $user_storage;
     $this->mailTemplateStorage = $template_storage;
     $this->token = $token;
     $this->mailer = $mailer;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -50,17 +52,27 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
    * and also use the person's name.
    */
   public function format(array $message) {
-    $message['to'] = $this->extractMailName($message['to']);
+    $message['to'] = $this->extractMailAddress($message['to']);
     $reply_to = $message['reply-to'];
+    $config = $this->configFactory->get('system.site');
 
     if (isset($message['params']['from'])) {
-      $from = $this->extractMailName($message['params']['from']);
-      $message['headers']['Sender'] = $from;
+      $from = $this->extractMailAddress($message['params']['from']);
       $message['from'] = $from;
+      $message['headers']['Sender'] = $message['from'];
+    }
+
+    // Format with site name when using site email as sender.
+    if ($message['from'] == $config->get('mail')) {
+      $message['from'] = $this->extractMailAddress([
+        'name' => $config->get('name'),
+        'email' => $config->get('mail'),
+      ]);
+      $message['headers']['Sender'] = $message['from'];
     }
 
     if ($reply_to instanceof UserInterface || $reply_to instanceof AccountInterface) {
-      $message['reply-to'] = $this->extractMailName($reply_to);
+      $message['reply-to'] = $this->extractMailAddress($reply_to);
       $message['headers']['Reply-to'] = $message['reply-to'];
     }
 
@@ -80,8 +92,12 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
     return $this->mailer->mail($message);
   }
 
-  protected function extractMailName($info) {
-    if ($info instanceof AccountInterface) {
+  protected function extractMailAddress($info) {
+    if (is_array($info)) {
+      $name = empty($info['name']) ? NULL : $info['name'];
+      $email = empty($info['email']) ? NULL : $info['email'];
+      return $name ? sprintf('%s <%s>', $name, $email) : $email;
+    } elseif ($info instanceof AccountInterface) {
       $info = $this->userStorage->load($info->id());
     }
     if ($info instanceof UserInterface) {
