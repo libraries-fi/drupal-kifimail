@@ -8,6 +8,7 @@ use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Template\TwigEnvironment;
 use Drupal\Core\Utility\Token;
 use Drupal\swiftmailer\Plugin\Mail\SwiftMailer;
 use Drupal\user\UserInterface;
@@ -25,6 +26,8 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
   protected $mailTemplateStorage;
   protected $token;
   protected $mailer;
+  protected $configFactory;
+  protected $twig;
 
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -32,16 +35,18 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
       $container->get('entity_type.manager')->getStorage('kifimail'),
       $container->get('token'),
       $container->get('plugin.manager.mail')->createInstance('swiftmailer'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('twig')
     );
   }
 
-  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, SwiftMailer $mailer, ConfigFactoryInterface $config_factory) {
+  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, SwiftMailer $mailer, ConfigFactoryInterface $config_factory, TwigEnvironment $twig) {
     $this->userStorage = $user_storage;
     $this->mailTemplateStorage = $template_storage;
     $this->token = $token;
     $this->mailer = $mailer;
     $this->configFactory = $config_factory;
+    $this->twig = $twig;
   }
 
   /**
@@ -80,8 +85,10 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
     $subject = $this->token->replace($template->getSubject(), $message['params']);
     $body = $this->token->replace($template->getBody(), $message['params']);
 
+    $markup = $this->twig->renderInline($body, $message['params']);
+
     $message['subject'] = $subject;
-    $message['body'] = [Markup::create($body)];
+    $message['body'] = [$markup];
     $message['params']['theme'] = $template->getTheme();
     $message['params']['with_signature'] = $template->isWithSignature();
 
