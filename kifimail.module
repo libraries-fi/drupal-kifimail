@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\file\Entity\File;
+
 function kifimail_theme() {
   return [
     'kifimail' => [
@@ -64,4 +66,25 @@ function kifimail_tokens($type, array $tokens, array $data, array $options) {
   }
 
   return $replacements;
+}
+
+function kifimail_mail_alter(array &$message) {
+  /*
+   * The Swift Mailer module supports attachments only as stdClass instances, so we have to
+   * convert File objects to stdClass objects manually.
+   */
+
+  /*
+   * FIXME: Doesn't detect whether or not Swift Mailer is actually being used, because Mail System,
+   * in practise, does not allow to check for that.
+   */
+
+  if (!empty($message['params']['files'])) {
+    foreach ($message['params']['files'] as $key => $file) {
+      if ($file instanceof File) {
+        $data = array_map(function($d) { return $d[0]['value']; }, $file->toArray());
+        $message['params']['files'][$key] = (object)$data;
+      }
+    }
+  }
 }
