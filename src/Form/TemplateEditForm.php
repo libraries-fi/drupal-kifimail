@@ -33,7 +33,7 @@ class TemplateEditForm extends EntityForm {
     $form['id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Identifier'),
-      '#description' => $this->t('Identifier has to be same as used in application code.'),
+      '#description' => $this->t('Identifier has to match that used in application code.'),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#default_value' => $this->entity->id(),
     ];
