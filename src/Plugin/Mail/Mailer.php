@@ -92,6 +92,8 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
     $message['params']['theme'] = $template->getTheme();
     $message['params']['with_signature'] = $template->isWithSignature();
 
+    $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+
     return $this->mailer->format($message);
   }
 
