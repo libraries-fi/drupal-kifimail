@@ -82,7 +82,11 @@ function kifimail_mail_alter(array &$message) {
   if (!empty($message['params']['files'])) {
     foreach ($message['params']['files'] as $key => $file) {
       if ($file instanceof File) {
-        $data = array_map(function($d) { return $d[0]['value']; }, $file->toArray());
+        $data = [
+          'filename' => $file->getFilename(),
+          'filemime' => $file->getMimeType(),
+          'uri' => $file->getFileUri(),
+        ];
         $message['params']['files'][$key] = (object)$data;
       }
     }
