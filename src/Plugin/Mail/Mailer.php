@@ -4,6 +4,7 @@ namespace Drupal\kifimail\Plugin\Mail;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Markup;
@@ -28,6 +29,7 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
   protected $mailer;
   protected $configFactory;
   protected $twig;
+  protected $languageManager;
 
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -36,17 +38,19 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
       $container->get('token'),
       $container->get('plugin.manager.mail')->createInstance('swiftmailer'),
       $container->get('config.factory'),
-      $container->get('twig')
+      $container->get('twig'),
+      $container->get('language_manager')
     );
   }
 
-  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, SwiftMailer $mailer, ConfigFactoryInterface $config_factory, TwigEnvironment $twig) {
+  public function __construct(EntityStorageInterface $user_storage, EntityStorageInterface $template_storage, Token $token, SwiftMailer $mailer, ConfigFactoryInterface $config_factory, TwigEnvironment $twig, LanguageManagerInterface $language_manager) {
     $this->userStorage = $user_storage;
     $this->mailTemplateStorage = $template_storage;
     $this->token = $token;
     $this->mailer = $mailer;
     $this->configFactory = $config_factory;
     $this->twig = $twig;
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -81,7 +85,7 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
       $message['headers']['Reply-to'] = $message['reply-to'];
     }
 
-    $template = $this->loadTemplate($message['id']);
+    $template = $this->loadTemplate($message['id'], $message['langcode']);
     $subject = $this->token->replace($template->getSubject(), $message['params']);
     $body = $this->token->replace($template->getBody(), $message['params']);
 
@@ -119,10 +123,20 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
     return $info;
   }
 
-  protected function loadTemplate($template_id) {
-    if ($template = $this->mailTemplateStorage->load($template_id)) {
-      return $template;
+  protected function loadTemplate($template_id, $langcode = NULL) {
+    if ($langcode) {
+      $tmp = $this->languageManager->getConfigOverrideLanguage();
+      $this->languageManager->setConfigOverrideLanguage($this->languageManager->getLanguage($langcode));
+      $template = $this->mailTemplateStorage->load($template_id);
+      $this->languageManager->setConfigOverrideLanguage($tmp);
+    } else {
+      $template = $this->mailTemplateStorage->load($template_id);
     }
-    throw new \Error(sprintf("Template '{$template_id}' does not exist."));
+
+    if (!$template) {
+      throw new \Error(sprintf("Template '{$template_id}' does not exist."));
+    }
+
+    return $template;
   }
 }
