@@ -79,11 +79,13 @@ class LoggedEmail extends ContentEntityBase implements LoggedEmailInterface {
       ->setLabel(t('Created'))
       ->setDescription(t('The time that the message was sent.'));
 
-    $fields['email'] = BaseFieldDefinition::create('string')
+    /*
+     * NOTE: Using string_long because this field can store multiple recipients.
+     */
+    $fields['email'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Email address'))
       ->setDescription(t('Recipient email address.'))
-      ->setRequired(TRUE)
-      ->setSetting('max_length', 255);
+      ->setRequired(TRUE);
 
     $fields['subject'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Subject'))
