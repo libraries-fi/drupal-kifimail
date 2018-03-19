@@ -2,5 +2,8 @@
   "name": "libraries-fi/kifimail",
   "description": "Compose email messages using Twig templates and configurable Drupal themes.",
   "type": "drupal-module",
-  "license": "GPL-2.0+"
+  "license": "GPL-2.0+",
+  "requirements": {
+    "drupal/swiftmailer": "^1.0@beta"
+  }
 }
