@@ -1,5 +1,5 @@
 {
-  "name": "librariesfi/kifimail",
+  "name": "libraries-fi/kifimail",
   "description": "Compose email messages using Twig templates and configurable Drupal themes.",
   "type": "drupal-module",
   "license": "GPL-2.0+",
