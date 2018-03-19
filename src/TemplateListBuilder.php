@@ -27,7 +27,7 @@ class TemplateListBuilder extends EntityListBuilder {
 
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery()
-      ->sort('name')
+      ->sort('label')
       ->sort('id');
 
     if ($this->limit) {
