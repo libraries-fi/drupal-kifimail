@@ -102,7 +102,15 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
   }
 
   public function mail(array $message) {
-    return $this->mailer->mail($message);
+    $status = true;
+
+    foreach ($this->recipientChunks($message['to']) as $recipients) {
+      print($recipients . PHP_EOL . PHP_EOL);
+      $message['to'] = $recipients;
+      $status &= $this->mailer->mail($message);
+    }
+
+    return $status;
   }
 
   protected function extractMailAddress($info) {
@@ -138,5 +146,26 @@ class Mailer implements MailInterface, ContainerFactoryPluginInterface {
     }
 
     return $template;
+  }
+
+  /**
+   * Splits recipients to chunks to avoid too long headers.
+   */
+  private function recipientChunks($recipients) {
+    $recipients = explode(',', $recipients);
+    $max_length = 998;
+    $chunk = '';
+
+    foreach ($recipients as $recipient) {
+      $new_chunk = ltrim(sprintf('%s, %s', $chunk, trim($recipient)), ', ');
+      if (strlen($new_chunk) < $max_length) {
+        $chunk = $new_chunk;
+      } else {
+        yield $chunk;
+        $chunk = $recipient;
+      }
+    }
+
+    yield $chunk;
   }
 }
