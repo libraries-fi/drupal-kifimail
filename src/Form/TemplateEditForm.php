@@ -80,14 +80,14 @@ class TemplateEditForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $template = $this->entity;
     $status = $template->save();
-    $form_state->setRedirectUrl($template->urlInfo('collection'));
+    $form_state->setRedirectUrl($template->toUrl('collection'));
 
     if ($status = SAVED_UPDATED) {
-      drupal_set_message($this->t('Email template %template has been updated.', [
+      $this->messenger()->addStatus($this->t('Email template %template has been updated.', [
         '%template' => $template->label(),
       ]));
     } else {
-      drupal_set_message($this->t('Email template %template has been added.', [
+      $this->messenger()->addStatus($this->t('Email template %template has been added.', [
         '%template' => $template->label(),
       ]));
     }

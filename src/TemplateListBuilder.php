@@ -30,6 +30,8 @@ class TemplateListBuilder extends EntityListBuilder {
       ->sort('label')
       ->sort('id');
 
+    $query->accessCheck(FALSE);
+
     if ($this->limit) {
       $query->pager($this->limit);
     }

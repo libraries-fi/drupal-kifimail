@@ -20,9 +20,7 @@ function kifimail_theme() {
 }
 
 function kifimail_theme_registry_alter(&$themes) {
-  $mail_themes = array_filter($themes, function($theme) {
-    return !empty($theme['mail theme']);
-  });
+  $mail_themes = array_filter($themes, fn($theme) => !empty($theme['mail theme']));
   $mail_themes = array_keys($mail_themes);
   sort($mail_themes);
   $config = Drupal::configFactory()->getEditable('kifimail.settings');

@@ -50,6 +50,7 @@ class LoggedEmail extends ContentEntityBase implements LoggedEmailInterface {
   }
 
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields = [];
     $fields['id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('ID'))
       ->setDescription(t('Log entry ID.'))
