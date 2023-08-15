@@ -30,7 +30,7 @@ function kifimail_theme_registry_alter(&$themes) {
 
 function template_preprocess_kifimail(&$variables) {
   $langcode = $variables['message']['langcode'];
-  $basedir = drupal_get_path('module', 'kifimail');
+  $basedir = \Drupal::service('extension.list.module')->getPath('kifimail');
   $variables['logo'] = "{$basedir}/public/kifi-email-logo-{$langcode}.png";
 
   $variables['site_name'] = \Drupal::config('system.site')->get('name');
